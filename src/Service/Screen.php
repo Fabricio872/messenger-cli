@@ -18,11 +18,11 @@ class Screen
         $this->frame = Frame::buildBase();
     }
 
-    public function getFrame(): Frame
+    public function getBaseFrame(): Frame
     {
         $builder = new FrameBuilder($this->frame);
 
-
+        $this->selectedFrame();
         $builder->addFrame(0, 0, $this->chatListFrame->get());
 
         return $this->frame;
@@ -30,12 +30,12 @@ class Screen
 
     public function up()
     {
-        $this->getSelectedFrame()->up();
+        $this->selectedFrame()->up();
     }
 
     public function down()
     {
-        $this->getSelectedFrame()->down();
+        $this->selectedFrame()->down();
     }
 
     public function left()
@@ -54,10 +54,11 @@ class Screen
         $this->table();
     }
 
-    private function getSelectedFrame(): FrameInterface
+    private function selectedFrame(): FrameInterface
     {
         switch ($this->activeFrame) {
             case ChatListFrame::class:
+                $this->chatListFrame->setActive(true);
                 return $this->chatListFrame;
         }
     }

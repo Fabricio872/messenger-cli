@@ -12,9 +12,9 @@ class InputManager
     private int $linesToDelete = 0;
 
     public function __construct(
-        private InputInterface $input,
+        private InputInterface  $input,
         private OutputInterface $output,
-        private Screen $screen
+        private Screen          $screen
     )
     {
     }
@@ -43,7 +43,7 @@ class InputManager
     {
         $this->output->write(sprintf("\033[%dA", $this->linesToDelete));
 
-        $frame =$this->screen->getFrame();
+        $frame = $this->screen->getBaseFrame();
         $this->linesToDelete = count($frame->getLines());
         $this->output->write($frame->render());
     }

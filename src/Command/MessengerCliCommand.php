@@ -35,7 +35,7 @@ class MessengerCliCommand extends Command
         $inputManager = new InputManager($input, $output, $this->screen);
         $inputManager->start();
 
-//        $io->write("\033[2J\033[;H");
+        $output->write("\033[2J\033[;H");
         return Command::SUCCESS;
     }
 }

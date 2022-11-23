@@ -135,6 +135,7 @@ class FrameBuilder
         $bottomLines = $this->frame->getLines();
         foreach ($bottomLines as $key => &$line) {
             if (array_key_exists($key, $topLines)) {
+                $line = preg_replace('/<[\s\S]+?>/', '', $line);
                 $line = substr_replace($line, $topLines[$key], $x, $this->stringCounter($topLines[$key]));
             }
         }

@@ -21,7 +21,7 @@ class ChatListFrame implements FrameInterface
 
     public function down()
     {
-        if ($this->selectedId < count($this->items)) {
+        if ($this->selectedId < count($this->items) - 1) {
             $this->selectedId += 1;
         }
     }
@@ -39,7 +39,7 @@ class ChatListFrame implements FrameInterface
     public function get(): Frame
     {
         $termianl = new Terminal();
-        $frame = new Frame(round($termianl->getWidth() / 3), $termianl->getHeight() - 2);
+        $frame = new Frame(round($termianl->getWidth() / 3), $termianl->getHeight() - 1);
 
         $builder = new FrameBuilder($frame);
         $builder

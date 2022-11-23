@@ -33,7 +33,7 @@ class MessengerCliCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $inputManager = new InputManager($input, $output, $this->screen);
-        $inputManager->drawEdiTable();
+        $inputManager->start();
 
 //        $io->write("\033[2J\033[;H");
         return Command::SUCCESS;

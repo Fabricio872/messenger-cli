@@ -11,7 +11,7 @@ class Frame
     public static function buildBase(): self
     {
         $terminal = new Terminal();
-        return new self($terminal->getWidth(), $terminal->getHeight()-2);
+        return new self($terminal->getWidth(), $terminal->getHeight()-1);
     }
 
     public function getLines(): array

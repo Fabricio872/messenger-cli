@@ -9,7 +9,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class InputManager
 {
-    private int $activeWindow = 0;
     private int $linesToDelete = 0;
 
     public function __construct(
@@ -20,7 +19,7 @@ class InputManager
     {
     }
 
-    public function drawEdiTable(): void
+    public function start(): void
     {
         $this->stream = $this->getInputStream();
 
@@ -42,11 +41,11 @@ class InputManager
 
     private function displayFrame()
     {
-        $this->output->write(sprintf("\033[%dA", $this->linesToDelete+2));
+        $this->output->write(sprintf("\033[%dA", $this->linesToDelete));
 
-        $this->linesToDelete = count($this->screen->getFrame()->getLines());
-        dump($this->screen->getFrame()->getLines());
-        $this->output->write($this->screen->getFrame()->render());
+        $frame =$this->screen->getFrame();
+        $this->linesToDelete = count($frame->getLines());
+        $this->output->write($frame->render());
     }
 
     private function tryCellNavigation($char): void

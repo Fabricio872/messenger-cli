@@ -6,7 +6,7 @@ use App\Model\Frame;
 use App\Service\FrameBuilder;
 use Symfony\Component\Console\Terminal;
 
-class ChatListFrame implements FrameInterface
+class ChatListSubFrame implements SubFrameInterface
 {
     private int $selectedId = 0;
     private array $items = ['Fabricio', 'dakto', 'dakto', 'dakto', 'dakto'];

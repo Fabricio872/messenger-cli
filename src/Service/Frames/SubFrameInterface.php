@@ -4,7 +4,7 @@ namespace App\Service\Frames;
 
 use App\Model\Frame;
 
-interface FrameInterface
+interface SubFrameInterface
 {
     public function up();
 

@@ -27,6 +27,9 @@ class InputManager
 
         $this->displayFrame();
 
+        $this->screen->right();
+        $this->displayFrame();
+
         while (!feof($this->stream) && ($char = fread($this->stream, 1)) != "\n") {
             if ("q" === $char) {
                 break;

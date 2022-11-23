@@ -135,8 +135,13 @@ class FrameBuilder
         $bottomLines = $this->frame->getLines();
         foreach ($bottomLines as $key => &$line) {
             if (array_key_exists($key, $topLines)) {
-                $line = preg_replace('/<[\s\S]+?>/', '', $line);
-                $line = substr_replace($line, $topLines[$key], $x, $this->stringCounter($topLines[$key]));
+                $test = preg_replace('/<[\s\S]+?>/', '',
+                    substr($line, -$this->stringCounter($topLines[$key]))
+                );
+                $hiddenCharsCount = strlen(preg_replace('/<[\s\S]+?>/', '',
+                        substr($line, -$this->stringCounter($topLines[$key]))
+                    ));
+                $line = substr_replace($line, $topLines[$key], $x + $hiddenCharsCount, $this->stringCounter($topLines[$key]) + $hiddenCharsCount);
             }
         }
         $this->frame->setLines($bottomLines);

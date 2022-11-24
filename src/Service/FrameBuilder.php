@@ -75,6 +75,15 @@ class FrameBuilder
         return $this;
     }
 
+    public function singleLine(string $text, int $x, int $y, int $maxLength = 0, int $cursor = 0): self
+    {
+        $lines = $this->frame->getLines();
+
+        $lines[$y]->addSubLine(new Line($text), $x);
+
+        return $this;
+    }
+
     public function textBottomMiddle(string $text): self
     {
         $lines = $this->frame->getLines();

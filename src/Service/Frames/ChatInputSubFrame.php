@@ -8,27 +8,31 @@ use Symfony\Component\Console\Terminal;
 
 class ChatInputSubFrame implements SubFrameInterface
 {
-    private int $selectedId = 0;
-    private array $items = ['Fabricio', 'dakto', 'dakto', 'dakto', 'dakto'];
     private bool $active = false;
+    private string $input = '';
 
     public function up()
     {
-        if ($this->selectedId > 0) {
-            $this->selectedId -= 1;
-        }
+        //not used
     }
 
     public function down()
     {
-        if ($this->selectedId < count($this->items) - 1) {
-            $this->selectedId += 1;
+        //not used
+    }
+
+    public function userInput(string $input)
+    {
+        if ($input == "\x7F") {
+            $this->input = substr($this->input, 0, -1);
+        } else {
+            $this->input .= $input;
         }
     }
 
     public function getSelected(): int
     {
-        return $this->selectedId;
+        return 0;
     }
 
     public function setActive(bool $active = false)
@@ -44,7 +48,7 @@ class ChatInputSubFrame implements SubFrameInterface
         $builder = new FrameBuilder($frame);
         $builder
             ->border()
-            ->textBottomMiddle($this->active ? 'selected' : '');
+            ->singleLine($this->input . $this->active ? "<bg=green> </>" : "<bg=white> </>", 1, 1);
 
         return $builder->getFrame();
     }

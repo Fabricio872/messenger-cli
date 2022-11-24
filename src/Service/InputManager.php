@@ -26,11 +26,13 @@ class InputManager
 
         $this->displayFrame();
 
-        while (!feof($this->stream) && ($char = fread($this->stream, 1)) != "\n") {
-            if ("q" === $char) {
-                break;
-            } elseif ("\033" === $char) {
+        while (!feof($this->stream) && ($char = fread($this->stream, 1)) != "q") {
+            if ("\033" === $char) {
                 $this->tryCellNavigation($char);
+            } elseif ("\t" === $char) {
+                $this->screen->right();
+            } elseif ($char) {
+                $this->screen->genericInput($char);
             }
             $this->displayFrame();
         }
@@ -52,13 +54,6 @@ class InputManager
         // Did we read an escape sequence?
         $char .= fread($this->stream, 2);
         if (empty($char[2]) || !in_array($char[2], ['A', 'B', 'C', 'D'])) {
-            if (empty($char[2]) || $char[2] == "3") {
-                $this->stopInteractiveMode();
-                $this->deleteUser();
-                $this->startInteractiveMode();
-                $this->table();
-            }
-
             // Input stream was not an arrow key.
             return;
         }

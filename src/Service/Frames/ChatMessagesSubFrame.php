@@ -27,6 +27,11 @@ class ChatMessagesSubFrame implements SubFrameInterface
         }
     }
 
+    public function userInput(string $input)
+    {
+        //not used
+    }
+
     public function getSelected(): int
     {
         return $this->selectedId;

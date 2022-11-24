@@ -54,7 +54,7 @@ class Screen
         return $this->frame;
     }
 
-    public function up()
+    public function up(): void
     {
         $this->selectedFrame()->up();
     }
@@ -64,7 +64,7 @@ class Screen
         $this->selectedFrame()->down();
     }
 
-    public function left()
+    public function left(): void
     {
         $position = array_search($this->activeSubFrame, array_keys($this->subFrames), true);
         $values = array_values($this->subFrames);
@@ -79,7 +79,7 @@ class Screen
         $this->selectedFrame();
     }
 
-    public function right()
+    public function right(): void
     {
         $position = array_search($this->activeSubFrame, array_keys($this->subFrames), true);
         $values = array_values($this->subFrames);
@@ -92,6 +92,11 @@ class Screen
 
         $this->activeSubFrame = get_class($next);
         $this->selectedFrame();
+    }
+
+    public function genericInput(string $userInput)
+    {
+        $this->selectedFrame()->userInput($userInput);
     }
 
     private function selectedFrame(): SubFrameInterface

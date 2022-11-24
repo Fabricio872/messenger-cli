@@ -7,18 +7,16 @@ use App\Service\Frames\ChatInputSubFrame;
 use App\Service\Frames\ChatListSubFrame;
 use App\Service\Frames\ChatMessagesSubFrame;
 use App\Service\Frames\SubFrameInterface;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Console\Terminal;
-use Symfony\Contracts\Cache\ItemInterface;
 
 class Screen
 {
     private Frame $frame;
     private string $activeSubFrame = ChatListSubFrame::class;
     /**
-     * @var ArrayCollection<string, SubFrameInterface>
+     * @var array<string, SubFrameInterface>
      */
-    private ArrayCollection $subFrames;
+    private array $subFrames;
 
     public function __construct(
         ChatListSubFrame     $chatListFrame,
@@ -27,11 +25,11 @@ class Screen
     )
     {
         $this->frame = Frame::buildBase();
-        $this->subFrames = new ArrayCollection([
+        $this->subFrames = [
             ChatListSubFrame::class => $chatListFrame,
             ChatMessagesSubFrame::class => $chatMessagesFrame,
             ChatInputSubFrame::class => $chatInputSubFrame
-        ]);
+        ];
     }
 
     public function getBaseFrame(): Frame
@@ -41,13 +39,17 @@ class Screen
 
         $this->selectedFrame();
 
-        $builder->addFrame(0, 0, $this->subFrames->get(ChatListSubFrame::class)->get());
-        $builder->addFrame(round($terminal->getWidth() / 3) - 1, 0, $this->subFrames->get(ChatMessagesSubFrame::class)->get());
-//        $builder->addFrame(
-//            round($terminal->getWidth() / 3) - 1,
-//            $terminal->getHeight() - 4,
-//            $this->subFrames->get(ChatInputSubFrame::class)->get()
-//        );
+        $builder->addFrame(0, 0, $this->subFrames[ChatListSubFrame::class]->get());
+        $builder->addFrame(
+            round($terminal->getWidth() / 3) - 1,
+            0,
+            $this->subFrames[ChatMessagesSubFrame::class]->get()
+        );
+        $builder->addFrame(
+            round($terminal->getWidth() / 3) - 1,
+            $terminal->getHeight() - 4,
+            $this->subFrames[ChatInputSubFrame::class]->get()
+        );
 
         return $this->frame;
     }
@@ -64,15 +66,32 @@ class Screen
 
     public function left()
     {
+        $position = array_search($this->activeSubFrame, array_keys($this->subFrames), true);
+        $values = array_values($this->subFrames);
+
+        if ($position > 0) {
+            $previous = $values[$position - 1];
+        } else {
+            $previous = $values[array_key_last($values)];
+        }
+
+        $this->activeSubFrame = get_class($previous);
+        $this->selectedFrame();
     }
 
     public function right()
     {
-        $this->subFrames->next();
-        if (!$this->subFrames->key()) {
-            $this->subFrames->first();
+        $position = array_search($this->activeSubFrame, array_keys($this->subFrames), true);
+        $values = array_values($this->subFrames);
+
+        if ($position + 1 < count($this->subFrames)) {
+            $next = $values[$position + 1];
+        } else {
+            $next = $values[array_key_first($values)];
         }
-        $this->activeSubFrame = $this->subFrames->key();
+
+        $this->activeSubFrame = get_class($next);
+        $this->selectedFrame();
     }
 
     private function selectedFrame(): SubFrameInterface
@@ -80,7 +99,7 @@ class Screen
         $this->setAllFramesInactive();
 
         /** @var SubFrameInterface $activeSubFrame */
-        $activeSubFrame = $this->subFrames->get($this->activeSubFrame);
+        $activeSubFrame = $this->subFrames[$this->activeSubFrame];
         $activeSubFrame->setActive(true);
 
         return $activeSubFrame;
@@ -88,8 +107,8 @@ class Screen
 
     private function setAllFramesInactive(): void
     {
-        $this->subFrames->forAll(function (string $key, SubFrameInterface $item) {
+        array_map(function (SubFrameInterface $item) {
             $item->setActive(false);
-        });
+        }, $this->subFrames);
     }
 }

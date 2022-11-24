@@ -70,11 +70,11 @@ class InputManager
             case 'B': // go down!
                 $this->screen->down();
                 break;
-            case 'C': // go left!
-                $this->screen->left();
-                break;
-            case 'D': // go right!
+            case 'C': // go right!
                 $this->screen->right();
+                break;
+            case 'D': // go left!
+                $this->screen->left();
                 break;
         }
     }

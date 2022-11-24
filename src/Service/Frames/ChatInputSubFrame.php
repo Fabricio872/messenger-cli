@@ -39,11 +39,12 @@ class ChatInputSubFrame implements SubFrameInterface
     public function get(): Frame
     {
         $terminal = new Terminal();
-        $frame = new Frame(round($terminal->getWidth() / 3), 3);
+        $frame = new Frame(round(($terminal->getWidth() / 3) * 2) + 1, 3);
 
         $builder = new FrameBuilder($frame);
         $builder
-            ->border();
+            ->border()
+            ->textBottomMiddle($this->active ? 'selected' : '');
 
         return $builder->getFrame();
     }

@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Model\Frame;
+use App\Model\Line;
 
 class FrameBuilder
 {
@@ -12,26 +13,20 @@ class FrameBuilder
     {
     }
 
-    private function stringCounter(string $string): int
-    {
-        return strlen(preg_replace('/<[\s\S]+?>/', '', $string));
-    }
-
     public function border(): self
     {
         $lines = $this->frame->getLines();
         $lineCount = count($lines);
         foreach ($lines as $i => &$line) {
             if ($i == 0 || $i == $lineCount - 1) {
-                $lines[$i] = str_repeat('-', $this->stringCounter($line));
-                $lines[$i] = substr_replace($line, '+', 0, 1);
-                $lines[$i] = substr_replace($line, '+', -1, 1);
+                $line->setLine(str_repeat('-', strlen($line)));
+                $line->setLine(substr_replace($line, '+', 0, 1));
+                $line->setLine(substr_replace($line, '+', -1, 1));
             } else {
-                $lines[$i] = substr_replace($line, '|', 0, 1);
-                $lines[$i] = substr_replace($line, '|', -1, 1);
+                $line->setLine(substr_replace($line, '|', 0, 1));
+                $line->setLine(substr_replace($line, '|', -1, 1));
             }
         }
-        $this->frame->setLines($lines);
         return $this;
     }
 
@@ -39,9 +34,8 @@ class FrameBuilder
     {
         $lines = $this->frame->getLines();
         foreach ($lines as $i => &$line) {
-            $lines[$i] = substr_replace($line, '|', -1, 1);
+            $line->setLine(substr_replace($line, '|', -1, 1));
         }
-        $this->frame->setLines($lines);
         return $this;
     }
 
@@ -49,24 +43,21 @@ class FrameBuilder
     {
         $lines = $this->frame->getLines();
         foreach ($lines as $i => &$line) {
-            $lines[$i] = substr_replace($line, '|', 0, 1);
+            $line->setLine(substr_replace($line, '|', 0, 1));
         }
-        $this->frame->setLines($lines);
         return $this;
     }
 
     public function topLine(): self
     {
         $lines = $this->frame->getLines();
-        $lineCount = count($lines);
         foreach ($lines as $i => &$line) {
             if ($i == 0) {
-                $lines[$i] = str_repeat('-', $this->stringCounter($line));
-                $lines[$i] = substr_replace($line, '+', 0, 1);
-                $lines[$i] = substr_replace($line, '+', -1, 1);
+                $line->setLine(str_repeat('-', strlen($line)));
+                $line->setLine(substr_replace($line, '+', 0, 1));
+                $line->setLine(substr_replace($line, '+', -1, 1));
             }
         }
-        $this->frame->setLines($lines);
         return $this;
     }
 
@@ -76,12 +67,11 @@ class FrameBuilder
         $lineCount = count($lines);
         foreach ($lines as $i => &$line) {
             if ($i == $lineCount - 1) {
-                $lines[$i] = str_repeat('-', $this->stringCounter($line));
-                $lines[$i] = substr_replace($line, '+', 0, 1);
-                $lines[$i] = substr_replace($line, '+', -1, 1);
+                $line->setLine(str_repeat('-', strlen($line)));
+                $line->setLine(substr_replace($line, '+', 0, 1));
+                $line->setLine(substr_replace($line, '+', -1, 1));
             }
         }
-        $this->frame->setLines($lines);
         return $this;
     }
 
@@ -90,13 +80,12 @@ class FrameBuilder
         $lines = $this->frame->getLines();
         $lastLine = $lines[array_key_last($lines)];
 
-        $lines[array_key_last($lines)] = substr_replace(
+        $lines[array_key_last($lines)]->setLine(substr_replace(
             $lastLine,
             $text,
-            round(($this->stringCounter($lastLine) - $this->stringCounter($text)) / 2, 0),
-            $this->stringCounter($text)
-        );
-        $this->frame->setLines($lines);
+            round((strlen($lastLine) - strlen($text)) / 2, 0),
+            strlen($text)
+        ));
         return $this;
     }
 
@@ -107,19 +96,18 @@ class FrameBuilder
 
         foreach ($lines as $i => &$line) {
             if ($i != $lineCount - 1 && $i != 0 && array_key_exists($i - 1, $items)) {
-                $lines[$i] = substr_replace($line, $items[$i - 1], 1, $this->stringCounter($items[$i - 1]));
+                $line->setLine(substr_replace($line, $items[$i - 1], 1, strlen($items[$i - 1])));
                 if ($i - 1 == $selectedId) {
                     if ($active) {
-                        $lines[$i] = substr_replace($line, '<fg=black;bg=green>', 1, 0);
-                        $lines[$i] = substr_replace($line, '</>', -1, 0);
+                        $line = $line->setLine(substr_replace($line, '<fg=black;bg=green>', 1, 0));
+                        $line = $line->setLine(substr_replace($line, '</>', -1, 0));
                     } else {
-                        $lines[$i] = substr_replace($line, '<fg=black;bg=white>', 1, 0);
-                        $lines[$i] = substr_replace($line, '</>', -1, 0);
+                        $line = $line->setLine(substr_replace($line, '<fg=black;bg=white>', 1, 0));
+                        $line = $line->setLine(substr_replace($line, '</>', -1, 0));
                     }
                 }
             }
         }
-        $this->frame->setLines($lines);
         return $this;
     }
 
@@ -130,21 +118,15 @@ class FrameBuilder
         foreach ($topLines as $key => $line) {
             $newLines[$key + $y] = $line;
         }
+        /** @var array<int, Line> $topLines */
         $topLines = $newLines;
 
         $bottomLines = $this->frame->getLines();
         foreach ($bottomLines as $key => &$line) {
             if (array_key_exists($key, $topLines)) {
-                $test = preg_replace('/<[\s\S]+?>/', '',
-                    substr($line, -$this->stringCounter($topLines[$key]))
-                );
-                $hiddenCharsCount = strlen(preg_replace('/<[\s\S]+?>/', '',
-                        substr($line, -$this->stringCounter($topLines[$key]))
-                    ));
-                $line = substr_replace($line, $topLines[$key], $x + $hiddenCharsCount, $this->stringCounter($topLines[$key]) + $hiddenCharsCount);
+                $line->addSubLine($topLines[$key], $x);
             }
         }
-        $this->frame->setLines($bottomLines);
         return $this;
     }
 

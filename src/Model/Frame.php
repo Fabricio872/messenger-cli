@@ -6,14 +6,18 @@ use Symfony\Component\Console\Terminal;
 
 class Frame
 {
+    /** @var array<int, Line> $lines */
     private array $lines;
 
     public static function buildBase(): self
     {
         $terminal = new Terminal();
-        return new self($terminal->getWidth(), $terminal->getHeight()-1);
+        return new self($terminal->getWidth(), $terminal->getHeight() - 1);
     }
 
+    /**
+     * @return array|Line[]
+     */
     public function getLines(): array
     {
         return $this->lines;
@@ -21,14 +25,17 @@ class Frame
 
     public function setLines(array $lines): Frame
     {
-        $this->lines = $lines;
+        $this->lines = array_map(function (string $line) {
+            return new Line($line);
+        }, $lines);
         return $this;
     }
 
     public function __construct(int $width, int $height)
     {
-        $chars = str_repeat(' ', $width);
-        $this->lines = array_pad([], $height, $chars);
+        for ($i = 0; $i < $height; $i++) {
+            $this->lines[] = new Line(str_repeat(' ', $width));
+        }
     }
 
     public function render(): string

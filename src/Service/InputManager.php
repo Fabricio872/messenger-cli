@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use PhpSchool\Terminal\IO\BufferedOutput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\StreamableInputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,9 +24,6 @@ class InputManager
 
         $this->startInteractiveMode();
 
-        $this->displayFrame();
-
-        $this->screen->right();
         $this->displayFrame();
 
         while (!feof($this->stream) && ($char = fread($this->stream, 1)) != "\n") {

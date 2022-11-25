@@ -39,7 +39,7 @@ class Line
         return $this;
     }
 
-    public function getRawLength():int
+    public function getRawLength(): int
     {
         return strlen($this->line);
     }
@@ -71,6 +71,6 @@ class Line
 
     private static function stringMerger(string $string1, Line $string2, int $position): string
     {
-        return substr_replace($string1, $string2->getRendered(), $position, $string2->getRawLength());
+        return substr_replace($string1, $string2, $position, $string2->getRawLength());
     }
 }
